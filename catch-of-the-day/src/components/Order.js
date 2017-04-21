@@ -45,7 +45,7 @@ class Order extends React.Component {
       <div className="order-wrap">
         <h2>Your Order</h2>
 
-        <CSSTransitionGroup className="order" className="order" component="ul" transitionName="order" transitionEnterTimeout={500} transitionLeaveTimeout={500}>
+        <CSSTransitionGroup className="order" component="ul" transitionName="order" transitionEnterTimeout={500} transitionLeaveTimeout={500}>
           {orderIds.map(this.renderOrder)}
           <li className="total">
             <strong>Total:</strong>
