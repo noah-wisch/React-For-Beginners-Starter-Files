@@ -15,6 +15,7 @@ class App extends React.Component {
     this.removeFish = this.removeFish.bind(this);
     this.loadSamples = this.loadSamples.bind(this);
     this.addToOrder = this.addToOrder.bind(this);
+    this.removeFromOrder = this.removeFromOrder.bind(this);
 
     //getInitialState -- idk what this is...
     this.state = {
@@ -84,6 +85,12 @@ class App extends React.Component {
     this.setState({ order });
   }
 
+  removeFromOrder(key) {
+    const order = { ...this.state.order };
+    delete order[key];
+    this.setState({ order });
+  }
+
   render() {
     return (
       <div className="catch-of-the-day">
@@ -101,6 +108,7 @@ class App extends React.Component {
           fishes={this.state.fishes}
           order={this.state.order}
           params={this.props.params}
+          removeFromOrder={this.removeFromOrder}
         />
       <Inventory
         addFish={this.addFish}
@@ -112,6 +120,10 @@ class App extends React.Component {
       </div>
     )
   }
+}
+
+App.PropTypes = {
+  params: React.PropTypes.object.isRequired
 }
 
 export default App;
