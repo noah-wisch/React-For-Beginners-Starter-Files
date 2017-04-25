@@ -9,11 +9,20 @@ class Inventory extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.renderLogin = this.renderLogin.bind(this);
     this.authenticate = this.authenticate.bind(this);
+    this.logout = this.logout.bind(this);
     this.authHandler = this.authHandler.bind(this);
     this.state = {
       uid: null,
       owner: null
     }
+  }
+
+  componentDidMount() {
+    base.onAuth((user) => {
+      if (user) {
+        this.authHandler(null, [user]);
+      }
+    });
   }
 
   handleChange(e, key) {
@@ -30,8 +39,36 @@ class Inventory extends React.Component {
     base.AuthWithOAuthPopup(provider, this.authHandler);
   }
 
+  logout() {
+    base.unauth();
+    this.setState({ uid: null })
+  }
+
   authHandler(err, authData) {
     console.log(authData);
+    if (err) {
+      console.error(err);
+      return;
+    }
+
+    // grab the store information
+    const storeRef = base.databsae().ref()
+
+    //query firebase once for store data
+    storeRef.once('value', (snapshot) => {
+      const data = snapshot.val() || {};
+
+      // claim it as our own if there is no owner
+      if (!data.owner) {
+        storeRef.set({
+          owner: authData.user.uid
+        });
+      }
+      this.setState({
+        uid: authData.user.uid,
+        owner: data.owner || authData.user.uid
+      });
+    });
   }
 
   renderLogin() {
@@ -66,7 +103,7 @@ class Inventory extends React.Component {
   }
 
   render() {
-    const logout = <button>Log Out!</button>
+    const logout = <button onClick={this.logout}>Log Out!</button>
 
     // check if they're not logged in
     if (!this.state.uid) {
@@ -102,6 +139,7 @@ Inventory.PropTypes = {
   removeFish: React.PropTypes.func.isRequired,
   addFish: React.PropTypes.func.isRequired,
   loadSamples: React.PropTypes.func.isRequired,
+  storeId: React.PropTypes.string.isRequired,
 };
 
 export default Inventory;
