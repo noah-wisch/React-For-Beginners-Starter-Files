@@ -20,7 +20,7 @@ class Inventory extends React.Component {
   componentDidMount() {
     base.onAuth((user) => {
       if (user) {
-        this.authHandler(null, [user]);
+        this.authHandler(null, { user });
       }
     });
   }
@@ -36,7 +36,8 @@ class Inventory extends React.Component {
   }
 
   authenticate(provider) {
-    base.AuthWithOAuthPopup(provider, this.authHandler);
+    console.log(`Trying to login with ${provider}`);
+    base.authWithOAuthPopup(provider, this.authHandler);
   }
 
   logout() {
@@ -52,7 +53,7 @@ class Inventory extends React.Component {
     }
 
     // grab the store information
-    const storeRef = base.databsae().ref()
+    const storeRef = base.databsae().ref(this.props.storeId);
 
     //query firebase once for store data
     storeRef.once('value', (snapshot) => {
@@ -107,7 +108,7 @@ class Inventory extends React.Component {
 
     // check if they're not logged in
     if (!this.state.uid) {
-      return <div>{this.renderLogin}</div>
+      return <div>{this.renderLogin()}</div>
     }
 
     // check if they're owner of current store
@@ -139,7 +140,7 @@ Inventory.PropTypes = {
   removeFish: React.PropTypes.func.isRequired,
   addFish: React.PropTypes.func.isRequired,
   loadSamples: React.PropTypes.func.isRequired,
-  storeId: React.PropTypes.string.isRequired,
+  storeId: React.PropTypes.string.isRequired
 };
 
 export default Inventory;
